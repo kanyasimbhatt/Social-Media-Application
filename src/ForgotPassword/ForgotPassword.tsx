@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,16 +18,11 @@ const schema = z.object({
 
 type UserFormField = z.infer<typeof schema>;
 
-type ForgotPasswordProps = {
-  location: string;
-};
-
 const defaultValues: UserFormField = {
   email: "",
 };
 
-const ForgotPassword = ({ location }: ForgotPasswordProps) => {
-  const navigate = useNavigate();
+const ForgotPassword = () => {
   const form = useForm<UserFormField>({
     resolver: zodResolver(schema),
     mode: "onChange",
@@ -97,7 +91,6 @@ const ForgotPassword = ({ location }: ForgotPasswordProps) => {
               type="button"
               variant={"ghost"}
               className="w-full pb-5 pt-5"
-              onClick={() => navigate(location)}
             >
               Cancel
             </Button>
