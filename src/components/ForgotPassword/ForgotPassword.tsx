@@ -1,16 +1,12 @@
 import { useForm, type SubmitHandler } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ToastContainer } from "react-toastify";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
+import { ToastContainer, toast } from "react-toastify";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
+import { axiosUserInstance } from "@/Service/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 const schema = z.object({
   email: z.string(),
@@ -18,11 +14,16 @@ const schema = z.object({
 
 type UserFormField = z.infer<typeof schema>;
 
+type ForgotPasswordProps = {
+  location: string;
+};
+
 const defaultValues: UserFormField = {
   email: "",
 };
 
-const ForgotPassword = () => {
+const ForgotPassword = ({ location }: ForgotPasswordProps) => {
+  const navigate = useNavigate();
   const form = useForm<UserFormField>({
     resolver: zodResolver(schema),
     mode: "onChange",
@@ -30,7 +31,27 @@ const ForgotPassword = () => {
   });
 
   const onSubmit: SubmitHandler<UserFormField> = async (data) => {
-    console.log(data);
+    try {
+      await axiosUserInstance.post("/forgot-password", data);
+
+      toast.success("Password Reset mail has been sent to your email id", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+
+      setTimeout(() => {
+        navigate(location);
+      }, 2000);
+    } catch (err) {
+      console.log(err);
+      form.setError("email", { message: `Email doesn't exist` });
+    }
   };
 
   return (
@@ -90,7 +111,8 @@ const ForgotPassword = () => {
             <Button
               type="button"
               variant={"ghost"}
-              className="w-full pb-5 pt-5 text-white"
+              className="w-full pb-5 pt-5"
+              onClick={() => navigate(location)}
             >
               Cancel
             </Button>

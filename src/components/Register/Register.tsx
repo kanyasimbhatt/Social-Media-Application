@@ -65,7 +65,7 @@ const Register = () => {
       });
 
       setTimeout(() => {
-        navigate("/");
+        navigate("/login");
       }, 2000);
     } catch (err: unknown) {
       console.log(err);

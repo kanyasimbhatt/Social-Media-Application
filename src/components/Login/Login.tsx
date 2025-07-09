@@ -1,10 +1,3 @@
-import { useState } from "react";
-import z from "zod";
-import { ToastContainer } from "react-toastify";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
-import { Button } from "../ui/button";
 import {
   Form,
   FormControl,
@@ -14,6 +7,14 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
+import z from "zod";
+import { ToastContainer, toast } from "react-toastify";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "../ui/button";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { axiosUserInstance } from "@/Service/axiosInstance";
 
 const schema = z.object({
   identity: z.string(),
@@ -27,8 +28,19 @@ const defaultValues: UserFormField = {
   password: "",
 };
 
+type EmailType = {
+  email: string;
+  password: string;
+};
+
+type UsernameType = {
+  username: string;
+  password: string;
+};
+
 const Login = () => {
   const [isPassword, setIsPassword] = useState(true);
+  const navigate = useNavigate();
   const form = useForm<UserFormField>({
     resolver: zodResolver(schema),
     mode: "onChange",
@@ -36,7 +48,34 @@ const Login = () => {
   });
 
   const onSubmit: SubmitHandler<UserFormField> = async (data) => {
-    console.log(data);
+    const regex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+    let newData: EmailType | UsernameType;
+    if (regex.test(data.identity)) {
+      newData = { password: data.password, email: data.identity };
+    } else {
+      newData = { password: data.password, username: data.identity };
+    }
+
+    try {
+      const response = await axiosUserInstance.post("/login", newData);
+      toast.success("You are logged in", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      console.log(response);
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    } catch (err) {
+      console.log(err);
+      form.setError("root", { message: "Invalid Credentials" });
+    }
   };
 
   return (
