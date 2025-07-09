@@ -90,7 +90,7 @@ const ForgotPassword = () => {
             <Button
               type="button"
               variant={"ghost"}
-              className="w-full pb-5 pt-5"
+              className="w-full pb-5 pt-5 text-white"
             >
               Cancel
             </Button>
