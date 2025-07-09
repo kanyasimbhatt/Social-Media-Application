@@ -1,9 +1,3 @@
-import z from "zod";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
-import { useState } from "react";
-import { ToastContainer } from "react-toastify";
 import {
   Form,
   FormControl,
@@ -13,7 +7,14 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
+import z from "zod";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 import { Button } from "../ui/button";
+import { axiosUserInstance } from "@/Service/axiosInstance";
 import { Input } from "../ui/input";
 
 const schema = z.object({
@@ -39,6 +40,7 @@ const defaultValues: UserFormField = {
 };
 
 const Register = () => {
+  const navigate = useNavigate();
   const [isPassword, setIsPassword] = useState(true);
   const form = useForm<UserFormField>({
     resolver: zodResolver(schema),
@@ -47,7 +49,28 @@ const Register = () => {
   });
 
   const onSubmit: SubmitHandler<UserFormField> = async (data) => {
-    console.log(data);
+    try {
+      console.log("hello: ", data);
+      await axiosUserInstance.post("/register", data);
+
+      toast.success("User information stored successfully", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    } catch (err: unknown) {
+      console.log(err);
+      form.setError("root", { message: "Username or email already exists" });
+    }
   };
 
   return (
