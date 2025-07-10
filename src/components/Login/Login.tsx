@@ -15,6 +15,7 @@ import { Button } from "../ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { axiosUserInstance } from "@/Service/axiosInstance";
+import { useAuth } from "@/hooks/useAuth";
 
 const schema = z.object({
   identity: z.string(),
@@ -40,6 +41,7 @@ type UsernameType = {
 
 const Login = () => {
   const [isPassword, setIsPassword] = useState(true);
+  const { setTokens } = useAuth();
   const navigate = useNavigate();
   const form = useForm<UserFormField>({
     resolver: zodResolver(schema),
@@ -58,6 +60,7 @@ const Login = () => {
 
     try {
       const response = await axiosUserInstance.post("/login", newData);
+
       toast.success("You are logged in", {
         position: "top-right",
         autoClose: 2000,
@@ -68,7 +71,12 @@ const Login = () => {
         progress: undefined,
         theme: "light",
       });
-      console.log(response);
+
+      setTokens({
+        accessToken: response.data.data.accessToken,
+        refreshToken: response.data.data.refreshToken,
+      });
+
       setTimeout(() => {
         navigate("/");
       }, 2000);
@@ -97,9 +105,6 @@ const Login = () => {
           className="p-10 shadow-2xl flex flex-col gap-6 rounded-md w-2xl"
           onSubmit={form.handleSubmit(onSubmit)}
         >
-          {/* <h4 className="scroll-m-20 text-lg font-semibold tracking-tight text-center">
-            Talentum
-          </h4> */}
           <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight text-center">
             Login
           </h3>

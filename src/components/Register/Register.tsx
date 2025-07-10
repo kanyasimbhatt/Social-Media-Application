@@ -50,7 +50,7 @@ const Register = () => {
 
   const onSubmit: SubmitHandler<UserFormField> = async (data) => {
     try {
-      console.log("hello: ", data);
+      
       await axiosUserInstance.post("/register", data);
 
       toast.success("User information stored successfully", {

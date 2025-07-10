@@ -18,13 +18,6 @@ axiosUserInstance.interceptors.request.use(
 
 axiosUserInstance.interceptors.response.use(
   (response) => {
-    if (
-      "refreshToken" in response.data.data &&
-      "accessToken" in response.data.data
-    ) {
-      localStorage.setItem("refreshToken", response.data.data.refreshToken);
-      sessionStorage.setItem("accessToken", response.data.data.accessToken);
-    }
     return response;
   },
   (error) => {
