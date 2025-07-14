@@ -58,9 +58,6 @@ const Login = () => {
           className="p-10 shadow-2xl flex flex-col gap-6 rounded-md w-2xl"
           onSubmit={form.handleSubmit(onSubmit)}
         >
-          {/* <h4 className="scroll-m-20 text-lg font-semibold tracking-tight text-center">
-            Talentum
-          </h4> */}
           <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight text-center">
             Login
           </h3>
